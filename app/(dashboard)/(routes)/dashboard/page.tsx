@@ -17,8 +17,8 @@ const tools = [
   {
     label: 'Conversation',
     icon: MessageSquare,
-    color: 'text-red-500',
-    bgColor: 'bg-red-500/10',
+    color: 'text-yellow-500',
+    bgColor: 'bg-yellow-500/10',
     href: '/conversation',
   },
   {

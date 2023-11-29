@@ -1,0 +1,22 @@
+import { Navbar } from '@/components/navbar/navbar';
+import Sidebar from '@/components/sidebar/sidebar';
+
+import { Fragment } from 'react';
+
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="relative h-full">
+      <div className="hidden h-full md:flex md:w-72 md:flex-col  md:fixed md:inset-y-0 z-[80] bg-gray-900">
+        <div className="">
+          <Sidebar />
+        </div>
+      </div>
+      <main className="md:pl-72">
+        <Navbar />
+        {children}
+      </main>
+    </div>
+  );
+};
+
+export default DashboardLayout;

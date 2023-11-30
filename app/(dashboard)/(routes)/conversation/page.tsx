@@ -15,14 +15,18 @@ import {
   FormItem,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import axios from 'axios';
 
 import { ConversationRouteSchema } from './constant';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 
 const ConversationPage = () => {
+  const route = useRouter();
   const [isMounted, setIsMounted] = useState(false);
-
+  const [messages, setMessages] = useState<ChatCompletionMessageParam[]>([]);
   const form = useForm<z.infer<typeof ConversationRouteSchema>>({
     resolver: zodResolver(ConversationRouteSchema),
     defaultValues: {
@@ -33,7 +37,27 @@ const ConversationPage = () => {
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof ConversationRouteSchema>) => {
-    console.log(values);
+    try {
+      const userMessage: ChatCompletionMessageParam = {
+        role: 'user',
+        content: values.prompt,
+      };
+
+      const newMessages = [...messages, userMessage];
+      console.log('newMessages', newMessages);
+
+      const response = await axios.post('/api/conversation', {
+        messages: newMessages,
+      });
+
+      setMessages((current) => [...current, userMessage, response.data]);
+      form.reset();
+    } catch (error) {
+      //TODO : open pro modal
+      console.error(error);
+    } finally {
+      route.refresh();
+    }
   };
 
   useEffect(() => {
@@ -94,6 +118,15 @@ const ConversationPage = () => {
               </Button>
             </form>
           </Form>
+        </div>
+
+        <div className="mt-4 space-y-4">
+          <div className="flex flex-col-reverse gap-y-4 ">
+            {messages.map((message, index) => {
+              const messageContent = message.content as string;
+              return <div key={message.role}>{messageContent}</div>;
+            })}
+          </div>
         </div>
       </div>
     </div>

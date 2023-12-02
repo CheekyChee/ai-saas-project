@@ -1,8 +1,6 @@
 import { Navbar } from '@/components/navbar/navbar';
 import Sidebar from '@/components/sidebar/sidebar';
 
-import { Fragment } from 'react';
-
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="relative h-full">

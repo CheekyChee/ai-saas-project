@@ -1,39 +1,33 @@
 'use client';
 
-import * as z from 'zod';
 import { useEffect, useState } from 'react';
+import * as z from 'zod';
 
-import { MessageSquare, User } from 'lucide-react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Code } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 
 import { Heading } from '@/components/heading/heading';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-} from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
 
-import { ConversationRouteSchema } from './constant';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
-import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
+import { BotAvatar } from '@/components/bot-avatar/bot-avatar';
 import { Empty } from '@/components/empty/empty';
 import { Loader } from '@/components/loader/loader';
-import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/user-avatar/user-avatar';
-import { BotAvatar } from '@/components/bot-avatar/bot-avatar';
+import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
+import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
+import { CodeGenerationRouteSchema } from './constant';
 
-const ConversationPage = () => {
+const CodePage = () => {
   const route = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [messages, setMessages] = useState<ChatCompletionMessageParam[]>([]);
-  const form = useForm<z.infer<typeof ConversationRouteSchema>>({
-    resolver: zodResolver(ConversationRouteSchema),
+  const form = useForm<z.infer<typeof CodeGenerationRouteSchema>>({
+    resolver: zodResolver(CodeGenerationRouteSchema),
     defaultValues: {
       prompt: '',
     },
@@ -41,7 +35,9 @@ const ConversationPage = () => {
 
   const isLoading = form.formState.isSubmitting;
 
-  const onSubmit = async (values: z.infer<typeof ConversationRouteSchema>) => {
+  const onSubmit = async (
+    values: z.infer<typeof CodeGenerationRouteSchema>
+  ) => {
     try {
       const userMessage: ChatCompletionMessageParam = {
         role: 'user',
@@ -51,7 +47,7 @@ const ConversationPage = () => {
       const newMessages = [...messages, userMessage];
       console.log('newMessages', newMessages);
 
-      const response = await axios.post('/api/conversation', {
+      const response = await axios.post('/api/code', {
         messages: newMessages,
       });
 
@@ -71,18 +67,15 @@ const ConversationPage = () => {
 
   if (!isMounted) return null;
 
-  const { watch } = form;
-  const promptValue = watch('prompt');
-
   return (
     <div>
       <Heading
-        title="Conversation"
-        description="Choose your destiny."
-        icon={MessageSquare}
-        bgColor="bg-yellow-500/10"
-        iconColor="text-yellow-500"
-        key={'conversation-heading'}
+        title="Code Generation"
+        description="Generate code using descriptive text."
+        icon={Code}
+        iconColor="text-pink-700"
+        bgColor="bg-pink-700/10"
+        key={'-heading'}
       />
       <div className="px-4 pb-8 lg:px-8">
         <div>
@@ -100,7 +93,7 @@ const ConversationPage = () => {
                         <Input
                           className="border-0 outline-none focus-visible:ring-0 focus-within:ring-transparent"
                           disabled={isLoading}
-                          placeholder="Prompt: What are simple Feng Shui tips for improving energy in a bedroom?"
+                          placeholder="Prompt: simple toggle button with react"
                           {...field}
                         />
                       </FormControl>
@@ -153,4 +146,4 @@ const ConversationPage = () => {
   );
 };
 
-export default ConversationPage;
+export default CodePage;

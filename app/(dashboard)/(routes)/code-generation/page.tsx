@@ -11,6 +11,7 @@ import { Heading } from '@/components/heading/heading';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
 
 import { BotAvatar } from '@/components/bot-avatar/bot-avatar';
 import { Empty } from '@/components/empty/empty';
@@ -135,7 +136,24 @@ const CodePage = () => {
                   )}
                 >
                   {message.role === 'user' ? <UserAvatar /> : <BotAvatar />}
-                  <p className="text-sm">{messageContent}</p>
+                  <ReactMarkdown
+                    components={{
+                      pre: ({ node, ...props }) => (
+                        <div className="w-full p-2 my-2 overflow-auto rounded-lg bg-black/10">
+                          <pre {...props} />
+                        </div>
+                      ),
+                      code: ({ node, ...props }) => (
+                        <code
+                          className="p-1 rounded-lg bg-black/10"
+                          {...props}
+                        />
+                      ),
+                    }}
+                    className={'text-sm overflow-hidden leading-7'}
+                  >
+                    {messageContent || ''}
+                  </ReactMarkdown>
                 </div>
               );
             })}

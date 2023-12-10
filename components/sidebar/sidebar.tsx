@@ -69,6 +69,12 @@ const routes = [
     color: 'text-orange-500',
   },
   {
+    label: 'Master Conversation',
+    icon: UserIcon,
+    href: '/conversation-with-master',
+    color: 'text-orange-500',
+  },
+  {
     label: 'Settngs',
     icon: Settings,
     href: '/settings',

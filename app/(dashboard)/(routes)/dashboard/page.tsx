@@ -56,6 +56,13 @@ const tools = [
     color: 'text-orange-500',
     bgColor: 'bg-orange-500/10',
   },
+  {
+    label: 'Master Conversation',
+    icon: UserIcon,
+    href: '/conversation-with-master',
+    color: 'text-orange-500',
+    bgColor: 'bg-orange-500/10',
+  },
 ];
 
 const DashboardPage = () => {
@@ -64,23 +71,22 @@ const DashboardPage = () => {
   return (
     <div className="pb-8">
       <div className="mb-8 space-y-4">
-        <h2 className="text-2xl md:text-4xl font-bold text-center">
+        <h2 className="text-2xl font-bold text-center md:text-4xl">
           Explore the World of Feng Shui AI
         </h2>
-        <p className="text-muted-foreground font-light text-sm md:text-lg text-center">
+        <p className="text-sm font-light text-center text-muted-foreground md:text-lg">
           Welcome to Feng Shui AI, your personal guide to harmonizing your
           surroundings. Improve your wellbeing, productivity, and prosperity
           with our intuitive and easy-to-use tool.
         </p>
       </div>
-      <div className="px-4 md:px-20 lg:px-32 space-y-4">
+      <div className="px-4 space-y-4 md:px-20 lg:px-32">
         {tools.map((tool) => {
           return (
             <Card
               onClick={() => router.push(tool.href)}
               key={tool.href}
-              className="p-4 border-black-5 flex items-center justify-between hover:shadow-md 
-              transition cursor-pointer"
+              className="flex items-center justify-between p-4 transition cursor-pointer border-black-5 hover:shadow-md"
             >
               <div className="flex items-center gap-x-4">
                 <div className={cn('p-2 w-fit rounded-md', tool.bgColor)}>
@@ -88,7 +94,7 @@ const DashboardPage = () => {
                 </div>
                 <div className="font-semibold">{tool.label}</div>
               </div>
-              <ArrowRight className="h-5 w-5 text-black-5" />
+              <ArrowRight className="w-5 h-5 text-black-5" />
             </Card>
           );
         })}

@@ -27,6 +27,8 @@ import { Loader } from '@/components/loader/loader';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/user-avatar/user-avatar';
 import { BotAvatar } from '@/components/bot-avatar/bot-avatar';
+import { ChatLine } from '@/components/chat-bubble/chat-bubble';
+import { Message } from 'ai/react';
 
 const ConversationWithMasterPage = () => {
   const route = useRouter();
@@ -70,6 +72,24 @@ const ConversationWithMasterPage = () => {
   }, []);
 
   if (!isMounted) return null;
+
+  const { watch } = form;
+  const promptValue = watch('prompt');
+
+  const messagesTest: Message[] = [
+    {
+      role: 'assistant',
+      content: "Hello, I'm your assistant.",
+      id: '1',
+    },
+    {
+      role: 'user',
+      content: 'Hello, I have a question.',
+      id: '2',
+    },
+  ];
+
+  const sourcesTest = ['source 1', 'source 2'];
 
   return (
     <div>
@@ -121,26 +141,20 @@ const ConversationWithMasterPage = () => {
               <Loader />
             </div>
           )}
-          {messages.length === 0 && !isLoading && (
+
+          {/* {messages.length === 0 && !isLoading && (
             <Empty label="No Conversation started." />
-          )}
+          )} */}
 
           <div className="flex flex-col-reverse gap-y-4 ">
-            {messages.map((message, index) => {
-              const messageContent = message.content as string;
+            {messagesTest.map((message, index) => {
               return (
-                <div
-                  key={message.role}
-                  className={cn(
-                    'p-8 w-full flex items-start gap-x-8 rounded-lg',
-                    message.role === 'user'
-                      ? 'bg-white border border-black/10'
-                      : 'bg-muted'
-                  )}
-                >
-                  {message.role === 'user' ? <UserAvatar /> : <BotAvatar />}
-                  <p className="text-sm">{messageContent}</p>
-                </div>
+                <ChatLine
+                  key={index}
+                  role={message.role}
+                  content={message.content}
+                  sources={message.role !== 'assistant' ? [] : sourcesTest}
+                />
               );
             })}
           </div>

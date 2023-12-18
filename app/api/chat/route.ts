@@ -8,11 +8,13 @@ import { makeChain } from '@/lib/makechain';
 import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from '@/config/pinecone';
 import { NextResponse } from 'next/server';
 
-export default async function POST(req: Request) {
+export async function POST(req: Request) {
   const { question, history } = await req.json();
 
   console.log('question', question);
   console.log('history', history);
+
+  const historyArray = Array.isArray(history) ? history : [];
 
   //only accept post requests
   if (req.method !== 'POST') {
@@ -37,12 +39,14 @@ export default async function POST(req: Request) {
         namespace: PINECONE_NAME_SPACE, //namespace comes from your config folder
       }
     );
-
+    console.log('vectorStore', vectorStore);
     // Use a callback to get intermediate sources from the middle of the chain
     let resolveWithDocuments: (value: Document[]) => void;
     const documentPromise = new Promise<Document[]>((resolve) => {
       resolveWithDocuments = resolve;
     });
+
+    console.log('documentPromise', documentPromise);
     const retriever = vectorStore.asRetriever({
       callbacks: [
         {
@@ -52,11 +56,13 @@ export default async function POST(req: Request) {
         },
       ],
     });
-
+    console.log('retriever', retriever);
     //create chain
     const chain = makeChain(retriever);
 
-    const pastMessages = history
+    console.log('history', history);
+
+    const pastMessages = historyArray
       .map((message: [string, string]) => {
         return [`Human: ${message[0]}`, `Assistant: ${message[1]}`].join('\n');
       })
@@ -73,7 +79,7 @@ export default async function POST(req: Request) {
 
     console.log('response', response);
     // res.status(200).json({ text: response, sourceDocuments });
-    NextResponse.json({ text: response, sourceDocuments });
+    return NextResponse.json({ text: response, sourceDocuments });
   } catch (error: any) {
     console.log('error', error);
     // res.status(500).json({ error: error.message || 'Something went wrong' });

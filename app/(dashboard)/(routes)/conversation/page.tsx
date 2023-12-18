@@ -21,12 +21,13 @@ import axios from 'axios';
 import { ConversationRouteSchema } from './constant';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
+
 import { Empty } from '@/components/empty/empty';
 import { Loader } from '@/components/loader/loader';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/user-avatar/user-avatar';
 import { BotAvatar } from '@/components/bot-avatar/bot-avatar';
+import { ChatCompletionMessageParam } from 'openai/resources';
 
 const ConversationPage = () => {
   const route = useRouter();

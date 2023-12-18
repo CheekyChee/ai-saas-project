@@ -10,15 +10,13 @@ import { pinecone } from '@/lib/pinecone-client';
 /* Name of directory to retrieve your files from 
    Make sure to add your PDF files inside the 'docs' folder
 */
-const filePath = 'docs';
+const filePath = './docs';
 
 export const run = async () => {
   try {
     /*load raw docs from the all files in the directory */
     const directoryLoader = new DirectoryLoader(filePath, {
       '.pdf': (path) => new PDFLoader(path),
-      '.txt': (path) => new TextLoader(path),
-      '.md': (path) => new TextLoader(path),
     });
 
     // const loader = new PDFLoader(filePath);
@@ -42,7 +40,7 @@ export const run = async () => {
     //embed the PDF documents
     await PineconeStore.fromDocuments(docs, embeddings, {
       pineconeIndex: index,
-      namespace: PINECONE_NAME_SPACE,
+      // namespace: PINECONE_NAME_SPACE,
       textKey: 'text',
     });
   } catch (error) {

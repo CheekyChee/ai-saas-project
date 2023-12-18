@@ -1,7 +1,7 @@
 import openai from '@/constants/openai-config';
 import { auth } from '@clerk/nextjs';
 import { NextResponse } from 'next/server';
-import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
+import { ChatCompletionMessageParam } from 'openai/resources';
 
 const instructionMessage: ChatCompletionMessageParam = {
   role: 'system',

@@ -1,37 +1,54 @@
 'use client';
 
-import * as z from 'zod';
 import { useEffect, useState } from 'react';
-
-import { MessageSquare, User } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import ReactMarkdown from 'react-markdown';
+import { MessageSquare } from 'lucide-react';
 
 import { Heading } from '@/components/heading/heading';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-} from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import axios from 'axios';
 
-import { ConversationRouteSchema } from './constant';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
-import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
+import { BotAvatar } from '@/components/bot-avatar/bot-avatar';
 import { Empty } from '@/components/empty/empty';
 import { Loader } from '@/components/loader/loader';
-import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/user-avatar/user-avatar';
-import { BotAvatar } from '@/components/bot-avatar/bot-avatar';
+import { cn } from '@/lib/utils';
+import { Message } from '@/types/chat';
+import { useRouter } from 'next/navigation';
+import { ConversationRouteSchema } from './constant';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 
 const ConversationWithMasterPage = () => {
   const route = useRouter();
-  const [isMounted, setIsMounted] = useState(false);
-  const [messages, setMessages] = useState<ChatCompletionMessageParam[]>([]);
+
+  // const [query, setQuery] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [messageState, setMessageState] = useState<{
+    messages: Message[];
+    pending?: string;
+    history: [string, string][];
+    pendingSourceDocs?: Document[];
+  }>({
+    messages: [
+      {
+        message: 'Hi, what would you like to learn about feng shui?',
+        type: 'apiMessage',
+      },
+    ],
+    history: [],
+  });
+
   const form = useForm<z.infer<typeof ConversationRouteSchema>>({
     resolver: zodResolver(ConversationRouteSchema),
     defaultValues: {
@@ -41,27 +58,72 @@ const ConversationWithMasterPage = () => {
 
   const isLoading = form.formState.isSubmitting;
 
+  const [isMounted, setIsMounted] = useState(false);
+
   const onSubmit = async (values: z.infer<typeof ConversationRouteSchema>) => {
+    setError(null);
+    // setQuery(values.prompt);
+
+    if (!values.prompt) {
+      alert('Please input a question');
+      return;
+    }
+
+    const question = values.prompt.trim();
+
+    setMessageState((state) => ({
+      ...state,
+      messages: [
+        ...state.messages,
+        {
+          type: 'userMessage',
+          message: question,
+        },
+      ],
+    }));
+
+    setLoading(true);
+    form.reset();
     try {
-      const userMessage: ChatCompletionMessageParam = {
-        role: 'user',
-        content: values.prompt,
-      };
-
-      const newMessages = [...messages, userMessage];
-      console.log('newMessages', newMessages);
-
-      const response = await axios.post('/api/conversation', {
-        messages: newMessages,
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          question,
+          history,
+        }),
       });
+      const data = await response.json();
+      console.log('data', data);
 
-      setMessages((current) => [...current, userMessage, response.data]);
-      form.reset();
+      if (data.error) {
+        setError(data.error);
+      } else {
+        setMessageState((state) => ({
+          ...state,
+          messages: [
+            ...state.messages,
+            {
+              type: 'apiMessage',
+              message: data.text,
+              sourceDocs: data.sourceDocuments,
+            },
+          ],
+          history: [...state.history, [question, data.text]],
+        }));
+      }
+      console.log('messageState', messageState);
+
+      setLoading(false);
+
+      //scroll to bottom
+      // messageListRef.current?.scrollTo(0, messageListRef.current.scrollHeight);
     } catch (error) {
-      //TODO : open pro modal
-      console.error(error);
-    } finally {
-      route.refresh();
+      setLoading(false);
+      setError('An error occurred while fetching the data. Please try again.');
+      console.log('error', error);
     }
   };
 
@@ -116,33 +178,70 @@ const ConversationWithMasterPage = () => {
         </div>
 
         <div className="mt-4 space-y-4">
-          {isLoading && (
-            <div className="flex items-center justify-center w-full p-8 rounded-lg bg-muted">
-              <Loader />
-            </div>
-          )}
-          {messages.length === 0 && !isLoading && (
+          {isLoading ||
+            (loading && (
+              <div className="flex items-center justify-center w-full p-8 rounded-lg bg-muted">
+                <Loader />
+              </div>
+            ))}
+          {messageState.messages.length === 0 && !isLoading && (
             <Empty label="No Conversation started." />
           )}
 
           <div className="flex flex-col-reverse gap-y-4 ">
-            {messages.map((message, index) => {
-              const messageContent = message.content as string;
+            {messageState.messages.map((message, index) => {
+              const messageContent = message.message as string;
               return (
-                <div
-                  key={message.role}
-                  className={cn(
-                    'p-8 w-full flex items-start gap-x-8 rounded-lg',
-                    message.role === 'user'
-                      ? 'bg-white border border-black/10'
-                      : 'bg-muted'
-                  )}
-                >
-                  {message.role === 'user' ? <UserAvatar /> : <BotAvatar />}
-                  <p className="text-sm">{messageContent}</p>
-                </div>
+                <>
+                  <div
+                    key={message.type}
+                    className={cn(
+                      'p-8 w-full flex items-start gap-x-8 rounded-lg',
+                      message.type !== 'apiMessage'
+                        ? 'bg-white border border-black/10'
+                        : 'bg-muted'
+                    )}
+                  >
+                    {message.type !== 'apiMessage' ? (
+                      <UserAvatar />
+                    ) : (
+                      <BotAvatar />
+                    )}
+                    <p className="text-sm">
+                      {<ReactMarkdown>{messageContent}</ReactMarkdown>}
+                    </p>
+                  </div>
+                  {/* {message.sourceDocs && (
+                    <div className="" key={`sourceDocsAccordion-${index}`}>
+                      <Accordion type="single" collapsible className="flex-col">
+                        {message.sourceDocs.map((doc, index) => (
+                          <div key={`messageSourceDocs-${index}`}>
+                            <AccordionItem value={`item-${index}`}>
+                              <AccordionTrigger>
+                                <h3>Source {index + 1}</h3>
+                              </AccordionTrigger>
+                              <AccordionContent>
+                                <ReactMarkdown linkTarget="_blank">
+                                  {doc.pageContent}
+                                </ReactMarkdown>
+                                <p className="mt-2">
+                                  <b>Source:</b> {doc.metadata.source}
+                                </p>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </div>
+                        ))}
+                      </Accordion>
+                    </div>
+                  )} */}
+                </>
               );
             })}
+            {error && (
+              <div className="p-4 border border-red-400 rounded-md">
+                <p className="text-red-500">{error}</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

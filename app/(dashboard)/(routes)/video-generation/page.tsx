@@ -109,8 +109,11 @@ const MelodyPage = () => {
           {!video && !isLoading && <Empty label="No Video Generated." />}
 
           {video && (
-            <video className="w-full aspect-video mt-8 rounded-lg border bg-black">
-              <source src={video} type="video/mp4" />
+            <video
+              controls
+              className="w-full aspect-video mt-8 rounded-lg border bg-black"
+            >
+              <source src={video} />
             </video>
           )}
         </div>

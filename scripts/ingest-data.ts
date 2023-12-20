@@ -17,6 +17,7 @@ export const run = async () => {
     /*load raw docs from the all files in the directory */
     const directoryLoader = new DirectoryLoader(filePath, {
       '.pdf': (path) => new PDFLoader(path),
+      '.txt': (path) => new TextLoader(path),
     });
 
     // const loader = new PDFLoader(filePath);
@@ -26,7 +27,6 @@ export const run = async () => {
     const textSplitter = new RecursiveCharacterTextSplitter({
       chunkSize: 1000,
       chunkOverlap: 200,
-      separators: ['\n', ' '],
     });
 
     const docs = await textSplitter.splitDocuments(rawDocs);

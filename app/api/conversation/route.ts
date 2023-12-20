@@ -1,4 +1,5 @@
 import openai from '@/constants/openai-config';
+import { QA_TEMPLATE } from '@/lib/makechain';
 import { auth } from '@clerk/nextjs';
 import { NextResponse } from 'next/server';
 
@@ -23,8 +24,15 @@ export async function POST(request: Request) {
     }
 
     const chatCompletion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: body.messages,
+      model: 'gpt-3.5-turbo-16k-0613',
+      messages: [
+        { role: 'system', content: QA_TEMPLATE },
+        { role: 'user', content: 'Help me to understand feng shui.' },
+
+        ...body.messages,
+      ],
+      temperature: 0.2,
+      max_tokens: 1000,
     });
 
     return NextResponse.json(chatCompletion.choices[0].message);

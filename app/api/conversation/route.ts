@@ -31,8 +31,8 @@ export async function POST(request: Request) {
 
         ...body.messages,
       ],
-      temperature: 0.2,
-      max_tokens: 1000,
+      temperature: 0,
+      max_tokens: 500,
     });
 
     return NextResponse.json(chatCompletion.choices[0].message);

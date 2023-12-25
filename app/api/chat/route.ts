@@ -7,6 +7,7 @@ import { pinecone } from '@/lib/pinecone-client';
 import { makeChain } from '@/lib/makechain';
 import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from '@/config/pinecone';
 import { NextResponse } from 'next/server';
+import { checkApiLimit, increaseApiLimit } from '@/lib/api-limit';
 
 export async function POST(req: Request) {
   const { question, history } = await req.json();
@@ -15,6 +16,13 @@ export async function POST(req: Request) {
   console.log('history', history);
 
   const historyArray = Array.isArray(history) ? history : [];
+
+  const freeTrial = await checkApiLimit();
+  if (!freeTrial) {
+    return new NextResponse('Error: Free trial limit exceeded', {
+      status: 403,
+    });
+  }
 
   //only accept post requests
   if (req.method !== 'POST') {
@@ -77,7 +85,7 @@ export async function POST(req: Request) {
 
     const sourceDocuments = await documentPromise;
 
-    console.log('response', response);
+    await increaseApiLimit();
     // res.status(200).json({ text: response, sourceDocuments });
     return NextResponse.json({ text: response, sourceDocuments });
   } catch (error: any) {

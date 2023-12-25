@@ -17,13 +17,16 @@ import {
   VideoIcon,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import { FreeCounter } from '../free-counter/free-counter';
 
 const monteserrat = Montserrat({
   weight: '600',
   subsets: ['latin'],
 });
 
-export interface SidebarProps {}
+export interface SidebarProps {
+  apiLimitCount: number;
+}
 
 const routes = [
   {
@@ -82,7 +85,7 @@ const routes = [
   },
 ];
 
-const Sidebar: FC<SidebarProps> = (props) => {
+const Sidebar: FC<SidebarProps> = ({ apiLimitCount = 0 }) => {
   const pathname = usePathname();
 
   return (
@@ -116,6 +119,7 @@ const Sidebar: FC<SidebarProps> = (props) => {
           ))}
         </div>
       </div>
+      <FreeCounter apiLimitCount={apiLimitCount} />
     </div>
   );
 };

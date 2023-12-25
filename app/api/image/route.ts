@@ -1,4 +1,5 @@
 import openai from '@/constants/openai-config';
+import { checkApiLimit, increaseApiLimit } from '@/lib/api-limit';
 import { auth } from '@clerk/nextjs';
 import { NextResponse } from 'next/server';
 
@@ -32,13 +33,20 @@ export async function POST(request: Request) {
       });
     }
 
+    const freeTrial = await checkApiLimit();
+    if (!freeTrial) {
+      return new NextResponse('Error: Free trial limit exceeded', {
+        status: 403,
+      });
+    }
+
     const response = await openai.images.generate({
       model: 'dall-e-3',
       prompt: prompt,
       n: parseInt(amount, 10),
       size: resolution,
     });
-
+    await increaseApiLimit();
     console.log('[INFO] image/route.ts POST', response);
     return NextResponse.json(response.data);
   } catch (error) {

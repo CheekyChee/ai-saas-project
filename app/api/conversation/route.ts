@@ -3,6 +3,8 @@ import { QA_TEMPLATE } from '@/lib/makechain';
 import { auth } from '@clerk/nextjs';
 import { NextResponse } from 'next/server';
 
+import { increaseApiLimit, checkApiLimit } from '@/lib/api-limit';
+
 export async function POST(request: Request) {
   const body = await request.json();
 
@@ -23,6 +25,13 @@ export async function POST(request: Request) {
       return new NextResponse('Error: Message not provided', { status: 400 });
     }
 
+    const freeTrial = await checkApiLimit();
+    if (!freeTrial) {
+      return new NextResponse('Error: Free trial limit exceeded', {
+        status: 403,
+      });
+    }
+
     const chatCompletion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo-16k-0613',
       messages: [
@@ -34,6 +43,8 @@ export async function POST(request: Request) {
       temperature: 0,
       max_tokens: 500,
     });
+
+    await increaseApiLimit();
 
     return NextResponse.json(chatCompletion.choices[0].message);
   } catch (error) {

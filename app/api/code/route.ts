@@ -2,7 +2,7 @@ import openai from '@/constants/openai-config';
 import { auth } from '@clerk/nextjs';
 import { NextResponse } from 'next/server';
 import { ChatCompletionMessageParam } from 'openai/resources';
-
+import { increaseApiLimit, checkApiLimit } from '@/lib/api-limit';
 const instructionMessage: ChatCompletionMessageParam = {
   role: 'system',
   content:
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       model: 'gpt-3.5-turbo',
       messages: [instructionMessage, ...body.messages],
     });
-
+    await increaseApiLimit();
     return NextResponse.json(chatCompletion.choices[0].message);
   } catch (error) {
     console.error('[ERROR] code/route.ts POST', error);

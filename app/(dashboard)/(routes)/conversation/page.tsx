@@ -29,6 +29,7 @@ import { UserAvatar } from '@/components/user-avatar/user-avatar';
 import { BotAvatar } from '@/components/bot-avatar/bot-avatar';
 import { ChatCompletionMessageParam } from 'openai/resources';
 import { useProModalStore } from '@/hooks/use-pro-modal';
+import ReactMarkdown from 'react-markdown';
 
 const ConversationPage = () => {
   const route = useRouter();
@@ -147,7 +148,13 @@ const ConversationPage = () => {
                   )}
                 >
                   {message.role === 'user' ? <UserAvatar /> : <BotAvatar />}
-                  <p className="text-sm">{messageContent}</p>
+                  <p className="text-sm">
+                    {
+                      <ReactMarkdown linkTarget="_blank">
+                        {messageContent}
+                      </ReactMarkdown>
+                    }
+                  </p>
                 </div>
               );
             })}

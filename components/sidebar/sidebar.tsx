@@ -12,12 +12,14 @@ import {
   LayoutDashboard,
   MessageSquare,
   MusicIcon,
+  Paperclip,
   Settings,
   UserIcon,
   VideoIcon,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { FreeCounter } from '../free-counter/free-counter';
+import { auth } from '@clerk/nextjs';
 
 const monteserrat = Montserrat({
   weight: '600',
@@ -26,68 +28,78 @@ const monteserrat = Montserrat({
 
 export interface SidebarProps {
   apiLimitCount: number;
+  userId: string;
 }
 
-const routes = [
-  {
-    label: 'Dashboard',
-    icon: LayoutDashboard,
-    href: '/dashboard',
-    color: 'text-red-500',
-  },
-  {
-    label: 'Conversation',
-    icon: MessageSquare,
-    href: '/conversation',
-    color: 'text-yellow-500',
-  },
-  {
-    label: 'Image Generation',
-    icon: ImageIcon,
-    href: '/image-generation',
-    color: 'text-green-500',
-  },
-  {
-    label: 'Video Generation',
-    icon: VideoIcon,
-    href: '/video-generation',
-    color: 'text-cyan-500',
-  },
-  {
-    label: 'Melody Generation',
-    icon: MusicIcon,
-    href: '/melody-generation',
-    color: 'text-purple-500',
-  },
-  {
-    label: 'Code Generation',
-    icon: Code,
-    href: '/code-generation',
-    color: 'text-pink-700',
-  },
-  {
-    label: 'Master Companion',
-    icon: UserIcon,
-    href: '/master-companion',
-    color: 'text-orange-500',
-  },
-  {
-    label: 'Master Conversation',
-    icon: UserIcon,
-    href: '/conversation-with-master',
-    color: 'text-orange-500',
-  },
-  {
-    label: 'Settngs',
-    icon: Settings,
-    href: '/settings',
-    color: 'text-white',
-  },
-];
-
-const Sidebar: FC<SidebarProps> = ({ apiLimitCount = 0 }) => {
+const Sidebar: FC<SidebarProps> = ({ apiLimitCount = 0, userId }) => {
   const pathname = usePathname();
 
+  const timestamp = Math.round(new Date().getTime());
+
+  const routes = [
+    {
+      label: 'Dashboard',
+      icon: LayoutDashboard,
+      href: '/dashboard',
+      color: 'text-red-500',
+    },
+    {
+      label: 'Conversation',
+      icon: MessageSquare,
+      href: '/conversation',
+      color: 'text-yellow-500',
+    },
+    {
+      label: 'Image Generation',
+      icon: ImageIcon,
+      href: '/image-generation',
+      color: 'text-green-500',
+    },
+    {
+      label: 'Video Generation',
+      icon: VideoIcon,
+      href: '/video-generation',
+      color: 'text-cyan-500',
+    },
+    {
+      label: 'Melody Generation',
+      icon: MusicIcon,
+      href: '/melody-generation',
+      color: 'text-purple-500',
+    },
+    {
+      label: 'Code Generation',
+      icon: Code,
+      href: '/code-generation',
+      color: 'text-pink-700',
+    },
+    {
+      label: 'Master Companion',
+      icon: UserIcon,
+      href: `/master-companion/${userId}-${timestamp}`,
+      color: 'text-orange-500',
+      bgColor: 'bg-orange-500/10',
+    },
+    {
+      label: 'History',
+      icon: Paperclip,
+      href: '/history',
+      color: 'text-orange-500',
+      bgColor: 'bg-orange-500/10',
+    },
+    {
+      label: 'Master Conversation',
+      icon: UserIcon,
+      href: '/conversation-with-master',
+      color: 'text-orange-500',
+    },
+    {
+      label: 'Settngs',
+      icon: Settings,
+      href: '/settings',
+      color: 'text-white',
+    },
+  ];
   return (
     <div className="space-y-4 py-4 flex flex-col h-full bg-[#111827] text-white">
       <div className="flex-1 px-3 py-2">

@@ -2,72 +2,83 @@
 
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { auth, useAuth } from '@clerk/nextjs';
 import {
   ArrowRight,
   Code,
   ImageIcon,
   MessageSquare,
   MusicIcon,
+  Paperclip,
   UserIcon,
   VideoIcon,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-const tools = [
-  {
-    label: 'Conversation',
-    icon: MessageSquare,
-    color: 'text-yellow-500',
-    bgColor: 'bg-yellow-500/10',
-    href: '/conversation',
-  },
-  {
-    label: 'Image Generation',
-    icon: ImageIcon,
-    color: 'text-green-500',
-    bgColor: 'bg-green-500/10',
-    href: '/image-generation',
-  },
-  {
-    label: 'Video Generation',
-    icon: VideoIcon,
-    color: 'text-cyan-500',
-    bgColor: 'bg-cyan-500/10',
-    href: '/video-generation',
-  },
-  {
-    label: 'Melody Generation',
-    icon: MusicIcon,
-    color: 'text-purple-500',
-    bgColor: 'bg-purple-500/10',
-    href: '/melody-generation',
-  },
-  {
-    label: 'Code Generation',
-    icon: Code,
-    color: 'text-pink-500',
-    bgColor: 'bg-pink-500/10',
-    href: '/code-generation',
-  },
-  {
-    label: 'Master Companion',
-    icon: UserIcon,
-    href: '/master-companion',
-    color: 'text-orange-500',
-    bgColor: 'bg-orange-500/10',
-  },
-  {
-    label: 'Master Conversation',
-    icon: UserIcon,
-    href: '/conversation-with-master',
-    color: 'text-orange-500',
-    bgColor: 'bg-orange-500/10',
-  },
-];
-
 const DashboardPage = () => {
   const router = useRouter();
+  // const { userId } = auth();
+  const { userId } = useAuth();
+  const timestamp = Math.round(new Date().getTime());
 
+  const tools = [
+    {
+      label: 'Conversation',
+      icon: MessageSquare,
+      color: 'text-yellow-500',
+      bgColor: 'bg-yellow-500/10',
+      href: '/conversation',
+    },
+    {
+      label: 'Image Generation',
+      icon: ImageIcon,
+      color: 'text-green-500',
+      bgColor: 'bg-green-500/10',
+      href: '/image-generation',
+    },
+    {
+      label: 'Video Generation',
+      icon: VideoIcon,
+      color: 'text-cyan-500',
+      bgColor: 'bg-cyan-500/10',
+      href: '/video-generation',
+    },
+    {
+      label: 'Melody Generation',
+      icon: MusicIcon,
+      color: 'text-purple-500',
+      bgColor: 'bg-purple-500/10',
+      href: '/melody-generation',
+    },
+    {
+      label: 'Code Generation',
+      icon: Code,
+      color: 'text-pink-500',
+      bgColor: 'bg-pink-500/10',
+      href: '/code-generation',
+    },
+    {
+      label: 'Master Companion',
+      icon: UserIcon,
+      href: `/master-companion/${userId}-${timestamp}`,
+      color: 'text-orange-500',
+      bgColor: 'bg-orange-500/10',
+    },
+    {
+      label: 'Master Conversation',
+      icon: UserIcon,
+      href: '/conversation-with-master',
+      color: 'text-orange-500',
+      bgColor: 'bg-orange-500/10',
+    },
+    {
+      label: 'History',
+      icon: Paperclip,
+      href: '/history',
+      color: 'text-orange-500',
+      bgColor: 'bg-orange-500/10',
+    },
+  ];
   return (
     <div className="pb-8">
       <div className="mb-8 space-y-4">

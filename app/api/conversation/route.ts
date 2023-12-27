@@ -7,8 +7,8 @@ import { increaseApiLimit, checkApiLimit } from '@/lib/api-limit';
 
 export async function POST(request: Request) {
   const body = await request.json();
-
   try {
+    const freeTrial = await checkApiLimit();
     const { userId } = auth();
 
     if (!userId) {
@@ -25,7 +25,6 @@ export async function POST(request: Request) {
       return new NextResponse('Error: Message not provided', { status: 400 });
     }
 
-    const freeTrial = await checkApiLimit();
     if (!freeTrial) {
       return new NextResponse('Error: Free trial limit exceeded', {
         status: 403,

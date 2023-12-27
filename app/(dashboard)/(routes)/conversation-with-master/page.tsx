@@ -26,10 +26,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { useProModalStore } from '@/hooks/use-pro-modal';
+import axios from 'axios';
 
 const ConversationWithMasterPage = () => {
   const route = useRouter();
-
+  const proModal = useProModalStore();
   // const [query, setQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -85,21 +87,16 @@ const ConversationWithMasterPage = () => {
     setLoading(true);
     form.reset();
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          question,
-          history,
-        }),
+      const response = await axios.post('/api/chat', {
+        question,
+        history,
       });
-      const data = await response.json();
-      console.log('data', data);
+
+      const data = response.data;
 
       if (data.error) {
         setError(data.error);
+        console.log('error', data.error);
       } else {
         setMessageState((state) => ({
           ...state,
@@ -120,10 +117,22 @@ const ConversationWithMasterPage = () => {
 
       //scroll to bottom
       // messageListRef.current?.scrollTo(0, messageListRef.current.scrollHeight);
-    } catch (error) {
+    } catch (error: any) {
       setLoading(false);
-      setError('An error occurred while fetching the data. Please try again.');
-      console.log('error', error);
+
+      if (error?.response?.status === 403) {
+        proModal.onOpen();
+      } else {
+        setError(
+          'An error occurred while fetching the data. Please try again.'
+        );
+      }
+      setMessageState((state) => ({
+        ...state,
+        messages: [],
+      }));
+    } finally {
+      // Code to be executed regardless of success or failure
     }
   };
 

@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/user-avatar/user-avatar';
 import { BotAvatar } from '@/components/bot-avatar/bot-avatar';
 import { ChatCompletionMessageParam } from 'openai/resources';
+import { useProModalStore } from '@/hooks/use-pro-modal';
 
 const ConversationPage = () => {
   const route = useRouter();
@@ -39,6 +40,8 @@ const ConversationPage = () => {
       prompt: '',
     },
   });
+
+  const proModal = useProModalStore();
 
   const isLoading = form.formState.isSubmitting;
 
@@ -58,8 +61,10 @@ const ConversationPage = () => {
 
       setMessages((current) => [...current, userMessage, response.data]);
       form.reset();
-    } catch (error) {
-      //TODO : open pro modal
+    } catch (error: any) {
+      if (error?.response?.status === 403) {
+        proModal.onOpen();
+      }
       console.error(error);
     } finally {
       route.refresh();
@@ -73,7 +78,6 @@ const ConversationPage = () => {
   if (!isMounted) return null;
 
   const { watch } = form;
-  const promptValue = watch('prompt');
 
   return (
     <div>

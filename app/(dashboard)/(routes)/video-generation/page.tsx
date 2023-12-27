@@ -18,9 +18,12 @@ import { MessageRouteSchema } from './constant';
 
 import { Empty } from '@/components/empty/empty';
 import { Loader } from '@/components/loader/loader';
+import { useProModalStore } from '@/hooks/use-pro-modal';
 
 const MelodyPage = () => {
   const route = useRouter();
+  const proModal = useProModalStore();
+
   const [isMounted, setIsMounted] = useState(false);
   const [video, setVideo] = useState<string>();
   const form = useForm<z.infer<typeof MessageRouteSchema>>({
@@ -39,8 +42,10 @@ const MelodyPage = () => {
       const response = await axios.post('/api/video', values);
       setVideo(response.data[0]);
       form.reset();
-    } catch (error) {
-      //TODO : open pro modal
+    } catch (error: any) {
+      if (error?.response?.status === 403) {
+        proModal.onOpen();
+      }
       console.error(error);
     } finally {
       route.refresh();

@@ -20,11 +20,15 @@ import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/user-avatar/user-avatar';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
-import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
+
 import { CodeGenerationRouteSchema } from './constant';
+import { useProModalStore } from '@/hooks/use-pro-modal';
+import { ChatCompletionMessageParam } from 'openai/resources';
 
 const CodePage = () => {
   const route = useRouter();
+  const proModal = useProModalStore();
+
   const [isMounted, setIsMounted] = useState(false);
   const [messages, setMessages] = useState<ChatCompletionMessageParam[]>([]);
   const form = useForm<z.infer<typeof CodeGenerationRouteSchema>>({
@@ -54,9 +58,10 @@ const CodePage = () => {
 
       setMessages((current) => [...current, userMessage, response.data]);
       form.reset();
-    } catch (error) {
-      //TODO : open pro modal
-      console.error(error);
+    } catch (error: any) {
+      if (error?.response?.status === 403) {
+        proModal.onOpen();
+      }
     } finally {
       route.refresh();
     }

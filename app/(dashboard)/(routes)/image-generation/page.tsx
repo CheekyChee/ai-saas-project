@@ -27,9 +27,12 @@ import {
 } from '@/components/ui/select';
 import { Card, CardFooter } from '@/components/ui/card';
 import Image from 'next/image';
+import { useProModalStore } from '@/hooks/use-pro-modal';
 
 const ImagePage = () => {
   const route = useRouter();
+  const proModal = useProModalStore();
+
   const [images, setImages] = useState<string[]>([]);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -55,9 +58,10 @@ const ImagePage = () => {
       setImages(urls);
 
       form.reset();
-    } catch (error) {
-      //TODO : open pro modal
-      console.error(error);
+    } catch (error: any) {
+      if (error?.response?.status === 403) {
+        proModal.onOpen();
+      }
     } finally {
       route.refresh();
     }

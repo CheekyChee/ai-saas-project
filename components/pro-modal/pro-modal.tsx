@@ -20,6 +20,7 @@ import {
   UserIcon,
   Check,
   Zap,
+  Paperclip,
 } from 'lucide-react';
 import { Card } from '../ui/card';
 import { cn } from '@/lib/utils';
@@ -59,13 +60,19 @@ export const ProModal = () => {
       color: 'text-pink-500',
       bgColor: 'bg-pink-500/10',
     },
-    // {
-    //   label: 'Master Companion',
-    //   icon: UserIcon,
-
-    //   color: 'text-orange-500',
-    //   bgColor: 'bg-orange-500/10',
-    // },
+    {
+      label: 'Master Companion',
+      icon: UserIcon,
+      color: 'text-orange-500',
+      bgColor: 'bg-orange-500/10',
+    },
+    {
+      label: 'History',
+      icon: Paperclip,
+      href: '/history',
+      color: 'text-orange-500',
+      bgColor: 'bg-orange-500/10',
+    },
     {
       label: 'Master Conversation',
       icon: UserIcon,

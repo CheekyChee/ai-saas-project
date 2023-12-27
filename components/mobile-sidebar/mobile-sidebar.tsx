@@ -5,12 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import Sidebar from '@/components/sidebar/sidebar';
+import { auth } from '@clerk/nextjs';
 
 interface MobileSidebarProps {
   apiLimitCount: number;
+  userId: string;
 }
 
-const MobileSidebar: FC<MobileSidebarProps> = ({ apiLimitCount }) => {
+const MobileSidebar: FC<MobileSidebarProps> = ({ apiLimitCount, userId }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -27,7 +29,7 @@ const MobileSidebar: FC<MobileSidebarProps> = ({ apiLimitCount }) => {
         </Button>
       </SheetTrigger>
       <SheetContent side={'left'} className="p-0">
-        <Sidebar apiLimitCount={apiLimitCount} />
+        <Sidebar apiLimitCount={apiLimitCount} userId={userId as string} />
       </SheetContent>
     </Sheet>
   );

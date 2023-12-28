@@ -30,6 +30,7 @@ import { BotAvatar } from '@/components/bot-avatar/bot-avatar';
 import { ChatCompletionMessageParam } from 'openai/resources';
 import { useProModalStore } from '@/hooks/use-pro-modal';
 import ReactMarkdown from 'react-markdown';
+import toast from 'react-hot-toast';
 
 const ConversationPage = () => {
   const route = useRouter();
@@ -66,6 +67,7 @@ const ConversationPage = () => {
       if (error?.response?.status === 403) {
         proModal.onOpen();
       }
+      toast.error(error?.response?.data?.message || error.message);
       console.error(error);
     } finally {
       route.refresh();

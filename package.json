@@ -27,6 +27,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.1.5",
     "@upstash/redis": "^1.27.1",
+    "react-hot-toast": "^2.4.1",
     "ai": "^2.2.28",
     "axios": "^1.6.2",
     "class-variance-authority": "^0.7.0",

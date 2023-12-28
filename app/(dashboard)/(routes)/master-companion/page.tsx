@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/accordion';
 import { useProModalStore } from '@/hooks/use-pro-modal';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const ConversationWithMasterPage = () => {
   const route = useRouter();
@@ -97,6 +98,7 @@ const ConversationWithMasterPage = () => {
       if (data.error) {
         setError(data.error);
         console.log('error', data.error);
+        toast.error(data.error);
       } else {
         setMessageState((state) => ({
           ...state,
@@ -124,6 +126,9 @@ const ConversationWithMasterPage = () => {
         proModal.onOpen();
       } else {
         setError(
+          'An error occurred while fetching the data. Please try again.'
+        );
+        toast.error(
           'An error occurred while fetching the data. Please try again.'
         );
       }

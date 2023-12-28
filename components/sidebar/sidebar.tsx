@@ -29,9 +29,10 @@ const monteserrat = Montserrat({
 export interface SidebarProps {
   apiLimitCount: number;
   userId: string;
+  isPro: boolean;
 }
 
-const Sidebar: FC<SidebarProps> = ({ apiLimitCount = 0, userId }) => {
+const Sidebar: FC<SidebarProps> = ({ apiLimitCount = 0, userId, isPro }) => {
   const pathname = usePathname();
 
   const timestamp = Math.round(new Date().getTime());
@@ -131,7 +132,7 @@ const Sidebar: FC<SidebarProps> = ({ apiLimitCount = 0, userId }) => {
           ))}
         </div>
       </div>
-      <FreeCounter apiLimitCount={apiLimitCount} />
+      <FreeCounter apiLimitCount={apiLimitCount} isPro={isPro} />
     </div>
   );
 };

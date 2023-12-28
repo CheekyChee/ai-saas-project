@@ -10,9 +10,14 @@ import { auth } from '@clerk/nextjs';
 interface MobileSidebarProps {
   apiLimitCount: number;
   userId: string;
+  isPro: boolean;
 }
 
-const MobileSidebar: FC<MobileSidebarProps> = ({ apiLimitCount, userId }) => {
+const MobileSidebar: FC<MobileSidebarProps> = ({
+  apiLimitCount = 0,
+  userId,
+  isPro = false,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -29,7 +34,11 @@ const MobileSidebar: FC<MobileSidebarProps> = ({ apiLimitCount, userId }) => {
         </Button>
       </SheetTrigger>
       <SheetContent side={'left'} className="p-0">
-        <Sidebar apiLimitCount={apiLimitCount} userId={userId as string} />
+        <Sidebar
+          apiLimitCount={apiLimitCount}
+          userId={userId as string}
+          isPro={isPro}
+        />
       </SheetContent>
     </Sheet>
   );

@@ -4,11 +4,18 @@ import { auth } from '@clerk/nextjs';
 import { NextResponse } from 'next/server';
 
 import { increaseApiLimit, checkApiLimit } from '@/lib/api-limit';
+import { checkSubscription } from '@/lib/subscription';
 
 export async function POST(request: Request) {
   const body = await request.json();
   try {
     const freeTrial = await checkApiLimit();
+    const isPro = await checkSubscription();
+    if (!freeTrial && !isPro) {
+      return new NextResponse('Error: Free trial limit exceeded', {
+        status: 403,
+      });
+    }
     const { userId } = auth();
 
     if (!userId) {
@@ -43,7 +50,9 @@ export async function POST(request: Request) {
       max_tokens: 500,
     });
 
-    await increaseApiLimit();
+    if (!isPro) {
+      await increaseApiLimit();
+    }
 
     return NextResponse.json(chatCompletion.choices[0].message);
   } catch (error) {

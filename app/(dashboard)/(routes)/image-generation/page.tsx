@@ -28,6 +28,7 @@ import {
 import { Card, CardFooter } from '@/components/ui/card';
 import Image from 'next/image';
 import { useProModalStore } from '@/hooks/use-pro-modal';
+import toast from 'react-hot-toast';
 
 const ImagePage = () => {
   const route = useRouter();
@@ -62,6 +63,7 @@ const ImagePage = () => {
       if (error?.response?.status === 403) {
         proModal.onOpen();
       }
+      toast.error(error?.response?.data?.message || error.message);
     } finally {
       route.refresh();
     }

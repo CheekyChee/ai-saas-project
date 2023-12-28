@@ -24,6 +24,7 @@ import { useRouter } from 'next/navigation';
 import { CodeGenerationRouteSchema } from './constant';
 import { useProModalStore } from '@/hooks/use-pro-modal';
 import { ChatCompletionMessageParam } from 'openai/resources';
+import toast from 'react-hot-toast';
 
 const CodePage = () => {
   const route = useRouter();
@@ -62,6 +63,7 @@ const CodePage = () => {
       if (error?.response?.status === 403) {
         proModal.onOpen();
       }
+      toast.error(error?.response?.data?.message || error.message);
     } finally {
       route.refresh();
     }

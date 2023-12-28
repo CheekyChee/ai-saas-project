@@ -20,6 +20,7 @@ import { Empty } from '@/components/empty/empty';
 import { Loader } from '@/components/loader/loader';
 import { ChatCompletionMessageParam } from 'openai/resources';
 import { useProModalStore } from '@/hooks/use-pro-modal';
+import toast from 'react-hot-toast';
 
 const MelodyPage = () => {
   const route = useRouter();
@@ -47,7 +48,7 @@ const MelodyPage = () => {
       if (error?.response?.status === 403) {
         proModal.onOpen();
       }
-      console.error(error);
+      toast.error(error?.response?.data?.message || error.message);
     } finally {
       route.refresh();
     }

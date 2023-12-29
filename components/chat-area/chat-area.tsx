@@ -61,6 +61,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId, setChatId }) => {
           }
           if (data.length > 0) {
             // 5. Filtering and mapping chat data
+            data = data.reverse();
             data = data.filter((item) => item.data.content);
             data = data.map((item, i) => {
               return {
@@ -138,7 +139,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId, setChatId }) => {
     // </div>
     <div className="px-4 pb-8 lg:px-8" ref={containerRef}>
       <div>
-        <form
+        {/* <form
           onSubmit={(e) => {
             e.preventDefault();
             handleAllSubmits(e);
@@ -155,8 +156,8 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId, setChatId }) => {
           <Button type="submit" className="w-full mb-2">
             Send
           </Button>
-        </form>
-        {/* <Form {...form}>
+        </form> */}
+        <Form {...form}>
           <form
             onSubmit={handleAllSubmits}
             className="grid w-full grid-cols-12 gap-2 p-4 px-3 border rounded-lg md:px-6 focus-within:shadow-sm"
@@ -171,7 +172,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId, setChatId }) => {
                         value={input}
                         className="border-0 outline-none focus-visible:ring-0 focus-within:ring-transparent"
                         disabled={isLoading}
-                        onChange={(e) =>}
+                        onChange={handleInputChange}
                         onKeyDown={handleAllSubmits}
                         placeholder="Prompt: What are simple Feng Shui tips for improving energy in a bedroom?"
                       />
@@ -182,12 +183,13 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId, setChatId }) => {
             />
             <Button
               disabled={isLoading}
+              type="submit"
               className="w-full col-span-12 lg:col-span-2"
             >
               Generate
             </Button>
           </form>
-        </Form> */}
+        </Form>
       </div>
 
       <div className="mt-4 space-y-4">
@@ -214,12 +216,10 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId, setChatId }) => {
                 )}
               >
                 {message.role === 'user' ? <UserAvatar /> : <BotAvatar />}
-                <p className="text-sm">
-                  {
-                    <ReactMarkdown linkTarget="_blank">
-                      {messageContent}
-                    </ReactMarkdown>
-                  }
+                <p className="text-sm ">
+                  <ReactMarkdown className="markdown">
+                    {messageContent}
+                  </ReactMarkdown>
                 </p>
               </div>
             );

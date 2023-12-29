@@ -1,3 +1,4 @@
+'use client';
 import { useState, useEffect } from 'react'; // Import useState and useEffect hooks from React
 import { useParams } from 'next/navigation'; // Import the useParams hook from Next.js
 import { Button } from '@/components/ui/button'; // Import the Button component
@@ -7,6 +8,8 @@ import { useRouter } from 'next/navigation';
 interface Item {
   href: string;
   title: string;
+  id: string;
+  content: string;
 }
 
 // Define the props for the Sidebar component
@@ -32,12 +35,15 @@ export const HistorySidebar = ({ userId }: SidebarProps) => {
     if (response.ok) {
       // 3. Parse and format chat history data
       let chatHistory = await response.json();
+
       chatHistory = chatHistory.reverse();
-      let dbChatHistory = chatHistory.map((item: string) => {
-        let parseDate = Number(item.replace(`${userId}-`, ''));
+      let dbChatHistory = chatHistory.map((item: any) => {
+        let parseDate = Number(item.id.replace(`${userId}-`, ''));
         return {
-          href: `/chat-history/${item}`,
+          href: `/master-companion/${item.id}`,
           title: new Date(parseDate).toLocaleString(),
+          id: item.id,
+          content: item.content,
         };
       });
 
@@ -45,7 +51,8 @@ export const HistorySidebar = ({ userId }: SidebarProps) => {
       if (
         params.id &&
         dbChatHistory.filter(
-          (item: { href: string }) => item.href === `/chat-history/${params.id}`
+          (item: { href: string }) =>
+            item.href === `/master-companion/${params.id}`
         ).length === 0
       ) {
         const unixTime = params.id.toString().replaceAll(`${userId}-`, '');
@@ -53,8 +60,10 @@ export const HistorySidebar = ({ userId }: SidebarProps) => {
         // 5. Add a new chat history item to the beginning of the list
         setItems([
           {
-            href: `/chat-history/${userId}-${unixTime}`,
+            href: `/master-companion/${userId}-${unixTime}`,
             title: new Date(Number(unixTime)).toLocaleString(),
+            id: `${userId}-${unixTime}`,
+            content: null,
           },
           ...dbChatHistory,
         ]);
@@ -80,7 +89,7 @@ export const HistorySidebar = ({ userId }: SidebarProps) => {
   }, []);
 
   return (
-    <div className="w-64 h-full top-0 overflow-y-auto bg-gray-200 flex flex-col justify-top px-2">
+    <div className="w-full p-4">
       <div className="ml-auto w-full">
         {/* 10. Render a button to create a new chat */}
         <Button className="w-full my-2" onClick={handleUpdateSidebar}>

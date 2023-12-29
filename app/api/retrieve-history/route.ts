@@ -16,9 +16,42 @@ export async function POST(req: Request): Promise<Response> {
   if (chatHistoryAction === 'retrieve') {
     // 8. Retrieving chat keys based on userId
     const chatKeys = await client.keys(`${userId}-*`);
-    return new Response(JSON.stringify(chatKeys));
+
+    const chatData = await Promise.all(
+      chatKeys.map((key) => client.lrange(key, 0, -1))
+    );
+
+    // Creating an array of objects with id and title properties
+    const response = chatKeys.map((key, index) => {
+      // Assuming each chatData item is an array of messages
+      const messages = chatData[index];
+      // Using the first message as the title
+      //@ts-ignore
+      const title = messages.length > 0 ? messages[0].data.content : 'No title';
+      return {
+        id: key,
+        content: title,
+      };
+    });
+    console.log('response', response);
+
+    return new Response(JSON.stringify(response));
   }
 
-  // 9. Returning an error response if chatHistoryAction is not 'retrieve'
-  return new Response('error');
+  return new Response('error POST', { status: 500 });
 }
+
+export async function DELETE(req: Request): Promise<Response> {
+  const { userId, chatHistoryAction } = (await req.json()) as RequestJson;
+
+  if (chatHistoryAction === 'delete') {
+    // Deleting chat keys based on userId
+    const deleteResult = await client.del(`${userId}-*`);
+    return new Response(
+      JSON.stringify({ success: deleteResult === 1, status: 200 })
+    );
+  }
+  // 9. Returning an error response if chatHistoryAction is not 'retrieve'
+  return new Response('error DELETE', { status: 500 });
+}
+// Checking the chatHistoryAction for deletion

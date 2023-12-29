@@ -95,7 +95,7 @@ const Sidebar: FC<SidebarProps> = ({ apiLimitCount = 0, userId, isPro }) => {
       color: 'text-orange-500',
     },
     {
-      label: 'Settngs',
+      label: 'Settings',
       icon: Settings,
       href: '/settings',
       color: 'text-white',

@@ -19,7 +19,7 @@ export const runtime = 'edge';
 const context = `You are an expert feng shui master. Use the following pieces of context to answer the question at the end.
 If you don't know the answer, just say you don't know. DO NOT try to make up an answer.
 If the question is not related to the context or chat history, politely respond that you are tuned to only answer questions that are related to the context.
-
+Put all important information as markdown in the context section. Make sure the answer is not too long beyond 500 tokens.
 Leverage the principles of Feng Shui to create a comprehensive analysis that can be applied universally to diverse spaces, both residential and commercial. Deliver a thorough Feng Shui assessment encompassing the following aspects:
 
 Foundation of Feng Shui: Begin by explaining the fundamental principles of Feng Shui, including the concept of Qi (energy) and the interaction of the five elements (wood, fire, earth, metal, water) in shaping the environment.
@@ -63,11 +63,13 @@ export async function POST(req: Request) {
         sessionId: userId,
         client: Redis.fromEnv(),
       }),
+      returnMessages: true,
+      memoryKey: 'history',
     });
 
     const chatPrompt = ChatPromptTemplate.fromMessages([
       ['system', context],
-
+      new MessagesPlaceholder('history'),
       ['human', '{input}'],
     ]);
 
@@ -75,6 +77,7 @@ export async function POST(req: Request) {
       modelName: 'gpt-3.5-turbo',
       temperature: 0,
       streaming: true,
+      maxTokens: 350,
     });
 
     const chain = new ConversationChain({
@@ -87,7 +90,6 @@ export async function POST(req: Request) {
 
     chain.call({
       input: lastMessage,
-
       callbacks: [handlers],
     });
     return new StreamingTextResponse(stream);

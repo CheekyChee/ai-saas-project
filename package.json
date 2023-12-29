@@ -27,11 +27,11 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.1.5",
     "@upstash/redis": "^1.27.1",
-    "react-hot-toast": "^2.4.1",
     "ai": "^2.2.28",
     "axios": "^1.6.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "crisp-sdk-web": "^1.0.21",
     "dotenv": "^16.3.1",
     "langchain": "^0.0.186",
     "lucide-react": "^0.293.0",
@@ -41,6 +41,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.48.2",
+    "react-hot-toast": "^2.4.1",
     "react-markdown": "^8.0.5",
     "replicate": "^0.25.2",
     "stripe": "^14.10.0",
@@ -50,6 +51,7 @@
     "zustand": "^4.4.7"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.10",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

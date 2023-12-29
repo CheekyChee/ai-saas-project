@@ -13,9 +13,6 @@ import { checkSubscription } from '@/lib/subscription';
 export async function POST(req: Request) {
   const { question, history } = await req.json();
 
-  console.log('question', question);
-  console.log('history', history);
-
   const historyArray = Array.isArray(history) ? history : [];
 
   const freeTrial = await checkApiLimit();

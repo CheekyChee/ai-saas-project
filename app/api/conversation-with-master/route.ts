@@ -1,4 +1,6 @@
 import dynamicAIPrompt from '@/constants/ai-prompt';
+import { checkApiLimit, increaseApiLimit } from '@/lib/api-limit';
+import { checkSubscription } from '@/lib/subscription';
 import { currentUser } from '@clerk/nextjs';
 import { Redis } from '@upstash/redis';
 import { LangChainStream, StreamingTextResponse } from 'ai';
@@ -18,12 +20,20 @@ export const runtime = 'edge';
 
 export async function POST(req: Request) {
   const { stream, handlers } = LangChainStream();
+
   const { messages, userId, loadMessages } = await req.json();
   const testPrompt = dynamicAIPrompt;
-
+  const freeTrial = await checkApiLimit();
+  const isPro = await checkSubscription();
   const user = await currentUser();
 
   try {
+    if (!freeTrial && !isPro) {
+      return new Response('Error: Free trial limit exceeded', {
+        status: 403,
+      });
+    }
+
     if (userId && loadMessages) {
       const populateHistoricChat = await client.lrange(userId, 0, -1);
       return new Response(JSON.stringify(populateHistoricChat));
@@ -76,6 +86,11 @@ export async function POST(req: Request) {
       input: lastMessage,
       callbacks: [handlers],
     });
+
+    if (!isPro) {
+      await increaseApiLimit();
+    }
+
     return new StreamingTextResponse(stream);
   } catch (error) {
     console.error(error);

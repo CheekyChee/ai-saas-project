@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { cn } from '@/lib/utils';
-import { buttonVariants } from './button';
+import { Button, buttonVariants } from './button';
 import {
   Card,
   CardContent,
@@ -19,10 +19,17 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
     href: string;
     title: string;
     content: string;
+    id: string;
   }[];
+  onClickRemove: (id: string) => void;
 }
 
-export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
+export function HistoryNav({
+  className,
+  items,
+  onClickRemove,
+  ...props
+}: SidebarNavProps) {
   const pathname = usePathname();
 
   return (
@@ -51,6 +58,15 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
           <CardContent>
             <p className="truncate">{item.content}</p>
           </CardContent>
+          <CardFooter className="flex justify-end">
+            <Button
+              onClick={() => onClickRemove(item.id)}
+              variant={'destructive'}
+              size={'sm'}
+            >
+              Delete
+            </Button>
+          </CardFooter>
         </Card>
       ))}
     </div>

@@ -2,8 +2,10 @@
 import { useState, useEffect } from 'react'; // Import useState and useEffect hooks from React
 import { useParams } from 'next/navigation'; // Import the useParams hook from Next.js
 import { Button } from '@/components/ui/button'; // Import the Button component
-import { SidebarNav } from '@/components/ui/sidebar-nav'; // Import the SidebarNav component
+import { HistoryNav } from '@/components/ui/sidebar-nav'; // Import the SidebarNav component
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import axios from 'axios';
 // Define the shape of each item in the sidebar
 interface Item {
   href: string;
@@ -13,11 +15,11 @@ interface Item {
 }
 
 // Define the props for the Sidebar component
-interface SidebarProps {
+interface HistorySidebarProps {
   userId: string;
 }
 // reached 22:46
-export const HistorySidebar = ({ userId }: SidebarProps) => {
+export const HistorySidebar = ({ userId }: HistorySidebarProps) => {
   const params = useParams();
   const [items, setItems] = useState<Item[]>([]);
   const router = useRouter();
@@ -74,6 +76,25 @@ export const HistorySidebar = ({ userId }: SidebarProps) => {
     } else {
       // 7. Handle errors if the API request fails
       console.error('Error retrieving chat history');
+      toast.error('Error retrieving chat history');
+    }
+  };
+
+  const handleDeleteSidebar = async (id: string) => {
+    console.log('id', id);
+
+    const response = await axios.delete('/api/retrieve-history', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: { chatHistoryAction: 'delete', id },
+    });
+    if (response.status === 200) {
+      handleRetrieveSidebar();
+      toast.success('Chat history deleted');
+    } else {
+      console.error('Error deleting chat history');
+      toast.error('Error deleting chat history');
     }
   };
 
@@ -97,7 +118,11 @@ export const HistorySidebar = ({ userId }: SidebarProps) => {
         </Button>
       </div>
       {/* 11. Render the sidebar navigation with the retrieved items */}
-      <SidebarNav items={items} className="flex-col" />
+      <HistoryNav
+        items={items}
+        className="flex-col"
+        onClickRemove={handleDeleteSidebar}
+      />
     </div>
   );
 };

@@ -1,29 +1,30 @@
-import { FC, Fragment } from 'react';
-import { useEffect, useRef, useLayoutEffect, FormEvent } from 'react';
-import { useParams } from 'next/navigation';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { useChat } from 'ai/react'; // Custom chat-related hook
-import ReactMarkdown from 'react-markdown';
-import { cn } from '@/lib/utils';
-import { UserAvatar } from '../user-avatar/user-avatar';
-import { BotAvatar } from '@/components/bot-avatar/bot-avatar';
-import { Form, FormControl, FormField, FormItem } from '../ui/form';
-import { Input } from '../ui/input';
-import { Loader } from '../loader/loader';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+'use client';
 import { ConversationRouteSchema } from '@/app/(dashboard)/(routes)/conversation/constant';
+import { BotAvatar } from '@/components/bot-avatar/bot-avatar';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useChat } from 'ai/react'; // Custom chat-related hook
+import { useParams } from 'next/navigation';
+import { FC, FormEvent, useEffect, useLayoutEffect, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import ReactMarkdown from 'react-markdown';
 import { z } from 'zod';
 import { Empty } from '../empty/empty';
+import { Loader } from '../loader/loader';
+import { Form, FormControl, FormField, FormItem } from '../ui/form';
+import { Input } from '../ui/input';
+import { UserAvatar } from '../user-avatar/user-avatar';
+import { clerkClient } from '@clerk/nextjs';
 export interface ChatAreaProps {
   chatId: string;
   setChatId: (chatId: string) => void;
+  // userName: string;
+  // userBirthday: string;
 }
 
 export const ChatArea: FC<ChatAreaProps> = ({ chatId, setChatId }) => {
   const params = useParams();
-
   const form = useForm<z.infer<typeof ConversationRouteSchema>>({
     resolver: zodResolver(ConversationRouteSchema),
     defaultValues: {
@@ -42,8 +43,6 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId, setChatId }) => {
     api: '/api/conversation-with-master',
   });
 
-  console.log('messages', messages);
-
   const handleLoadChat = async () => {
     if (params.id && typeof params.id === 'string') {
       setChatId(params.id);
@@ -61,6 +60,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId, setChatId }) => {
           }
           if (data.length > 0) {
             // 5. Filtering and mapping chat data
+            data = data.reverse();
             data = data.filter((item) => item.data.content);
             data = data.map((item, i) => {
               return {
@@ -101,62 +101,9 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId, setChatId }) => {
   }, []);
 
   return (
-    // <div className="h-screen w-full m-5 flex flex-col justify-between ">
-    //   <div
-    //     ref={containerRef}
-    //     className="h-full flex flex-col overflow-y-auto overflow-x-hidden"
-    //   >
-    //     {messages.length > 0
-    //       ? messages.map((m) => (
-    //           <div
-    //             key={m.id}
-    //             className={`${
-    //               m.role === 'user' ? 'flex justify-end' : 'flex justify-start'
-    //             } my-1`}
-    //           >
-    //             <div
-    //               className={`max-w-3/4 px-4 py-2 rounded-lg ${
-    //                 m.role === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-200'
-    //               }`}
-    //             >
-    //               {m.content}
-    //             </div>
-    //           </div>
-    //         ))
-    //       : null}
-    //   </div>
-    // <form onSubmit={handleAllSubmits} className="">
-    //   <Textarea
-    //     value={input}
-    //     placeholder="Say something..."
-    //     onChange={handleInputChange}
-    //     onKeyDown={handleAllSubmits}
-    //     className="w-full my-2"
-    //   />
-    //   <Button className="w-full mb-2">Send</Button>
-    // </form>
-    // </div>
     <div className="px-4 pb-8 lg:px-8" ref={containerRef}>
       <div>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleAllSubmits(e);
-          }}
-          className=""
-        >
-          <Textarea
-            value={input}
-            placeholder="Say something..."
-            onChange={handleInputChange}
-            onKeyDown={handleAllSubmits}
-            className="w-full my-2"
-          />
-          <Button type="submit" className="w-full mb-2">
-            Send
-          </Button>
-        </form>
-        {/* <Form {...form}>
+        <Form {...form}>
           <form
             onSubmit={handleAllSubmits}
             className="grid w-full grid-cols-12 gap-2 p-4 px-3 border rounded-lg md:px-6 focus-within:shadow-sm"
@@ -171,7 +118,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId, setChatId }) => {
                         value={input}
                         className="border-0 outline-none focus-visible:ring-0 focus-within:ring-transparent"
                         disabled={isLoading}
-                        onChange={(e) =>}
+                        onChange={handleInputChange}
                         onKeyDown={handleAllSubmits}
                         placeholder="Prompt: What are simple Feng Shui tips for improving energy in a bedroom?"
                       />
@@ -182,12 +129,13 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId, setChatId }) => {
             />
             <Button
               disabled={isLoading}
+              type="submit"
               className="w-full col-span-12 lg:col-span-2"
             >
               Generate
             </Button>
           </form>
-        </Form> */}
+        </Form>
       </div>
 
       <div className="mt-4 space-y-4">
@@ -214,12 +162,10 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId, setChatId }) => {
                 )}
               >
                 {message.role === 'user' ? <UserAvatar /> : <BotAvatar />}
-                <p className="text-sm">
-                  {
-                    <ReactMarkdown linkTarget="_blank">
-                      {messageContent}
-                    </ReactMarkdown>
-                  }
+                <p className="text-sm ">
+                  <ReactMarkdown className="markdown">
+                    {messageContent}
+                  </ReactMarkdown>
                 </p>
               </div>
             );

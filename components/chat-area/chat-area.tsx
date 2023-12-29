@@ -1,29 +1,30 @@
-import { FC, Fragment } from 'react';
-import { useEffect, useRef, useLayoutEffect, FormEvent } from 'react';
-import { useParams } from 'next/navigation';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { useChat } from 'ai/react'; // Custom chat-related hook
-import ReactMarkdown from 'react-markdown';
-import { cn } from '@/lib/utils';
-import { UserAvatar } from '../user-avatar/user-avatar';
-import { BotAvatar } from '@/components/bot-avatar/bot-avatar';
-import { Form, FormControl, FormField, FormItem } from '../ui/form';
-import { Input } from '../ui/input';
-import { Loader } from '../loader/loader';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+'use client';
 import { ConversationRouteSchema } from '@/app/(dashboard)/(routes)/conversation/constant';
+import { BotAvatar } from '@/components/bot-avatar/bot-avatar';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useChat } from 'ai/react'; // Custom chat-related hook
+import { useParams } from 'next/navigation';
+import { FC, FormEvent, useEffect, useLayoutEffect, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import ReactMarkdown from 'react-markdown';
 import { z } from 'zod';
 import { Empty } from '../empty/empty';
+import { Loader } from '../loader/loader';
+import { Form, FormControl, FormField, FormItem } from '../ui/form';
+import { Input } from '../ui/input';
+import { UserAvatar } from '../user-avatar/user-avatar';
+import { clerkClient } from '@clerk/nextjs';
 export interface ChatAreaProps {
   chatId: string;
   setChatId: (chatId: string) => void;
+  // userName: string;
+  // userBirthday: string;
 }
 
 export const ChatArea: FC<ChatAreaProps> = ({ chatId, setChatId }) => {
   const params = useParams();
-
   const form = useForm<z.infer<typeof ConversationRouteSchema>>({
     resolver: zodResolver(ConversationRouteSchema),
     defaultValues: {
@@ -41,8 +42,6 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId, setChatId }) => {
   } = useChat({
     api: '/api/conversation-with-master',
   });
-
-  console.log('messages', messages);
 
   const handleLoadChat = async () => {
     if (params.id && typeof params.id === 'string') {

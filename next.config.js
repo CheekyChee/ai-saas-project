@@ -7,7 +7,13 @@ const nextConfig = {
     return config;
   },
   images: {
-    domains: ['oaidalleapiprodscus.blob.core.windows.net'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'oaidalleapiprodscus.blob.core.windows.net',
+        port: '',
+      },
+    ],
   },
 };
 

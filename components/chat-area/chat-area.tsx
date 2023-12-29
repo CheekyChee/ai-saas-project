@@ -101,61 +101,8 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId, setChatId }) => {
   }, []);
 
   return (
-    // <div className="h-screen w-full m-5 flex flex-col justify-between ">
-    //   <div
-    //     ref={containerRef}
-    //     className="h-full flex flex-col overflow-y-auto overflow-x-hidden"
-    //   >
-    //     {messages.length > 0
-    //       ? messages.map((m) => (
-    //           <div
-    //             key={m.id}
-    //             className={`${
-    //               m.role === 'user' ? 'flex justify-end' : 'flex justify-start'
-    //             } my-1`}
-    //           >
-    //             <div
-    //               className={`max-w-3/4 px-4 py-2 rounded-lg ${
-    //                 m.role === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-200'
-    //               }`}
-    //             >
-    //               {m.content}
-    //             </div>
-    //           </div>
-    //         ))
-    //       : null}
-    //   </div>
-    // <form onSubmit={handleAllSubmits} className="">
-    //   <Textarea
-    //     value={input}
-    //     placeholder="Say something..."
-    //     onChange={handleInputChange}
-    //     onKeyDown={handleAllSubmits}
-    //     className="w-full my-2"
-    //   />
-    //   <Button className="w-full mb-2">Send</Button>
-    // </form>
-    // </div>
     <div className="px-4 pb-8 lg:px-8" ref={containerRef}>
       <div>
-        {/* <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleAllSubmits(e);
-          }}
-          className=""
-        >
-          <Textarea
-            value={input}
-            placeholder="Say something..."
-            onChange={handleInputChange}
-            onKeyDown={handleAllSubmits}
-            className="w-full my-2"
-          />
-          <Button type="submit" className="w-full mb-2">
-            Send
-          </Button>
-        </form> */}
         <Form {...form}>
           <form
             onSubmit={handleAllSubmits}

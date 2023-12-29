@@ -136,7 +136,7 @@ const ConversationWithMasterPage = () => {
   return (
     <div>
       <Heading
-        title="Conversation"
+        title="Conversation with Master"
         description="Choose your destiny."
         icon={MessageSquare}
         bgColor="bg-yellow-500/10"

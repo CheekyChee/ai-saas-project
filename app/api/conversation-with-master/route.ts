@@ -23,16 +23,15 @@ export async function POST(req: Request) {
 
   const { messages, userId, loadMessages } = await req.json();
   const testPrompt = dynamicAIPrompt;
-  const freeTrial = await checkApiLimit();
-  const isPro = await checkSubscription();
   const user = await currentUser();
-
+  // const freeTrial = await checkApiLimit();
   try {
-    if (!freeTrial && !isPro) {
-      return new Response('Error: Free trial limit exceeded', {
-        status: 403,
-      });
-    }
+    // const isPro = await checkSubscription();
+    // if (!freeTrial && !isPro) {
+    //   return new Response('Error: Free trial limit exceeded', {
+    //     status: 403,
+    //   });
+    // }
 
     if (userId && loadMessages) {
       const populateHistoricChat = await client.lrange(userId, 0, -1);
@@ -86,10 +85,9 @@ export async function POST(req: Request) {
       input: lastMessage,
       callbacks: [handlers],
     });
-
-    if (!isPro) {
-      await increaseApiLimit();
-    }
+    // if (!isPro) {
+    //   await increaseApiLimit();
+    // }
 
     return new StreamingTextResponse(stream);
   } catch (error) {

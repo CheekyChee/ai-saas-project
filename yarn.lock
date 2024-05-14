@@ -462,7 +462,7 @@
     encoding "^0.1.13"
     typescript "^4.9.4"
 
-"@prisma/client@^5.0.0":
+"@prisma/client@^5.7.1":
   version "5.7.1"
   resolved "https://registry.yarnpkg.com/@prisma/client/-/client-5.7.1.tgz#a124afd05663267f7255a639a81d28303684a063"
   integrity sha512-TUSa4nUcC4nf/e7X3jyO1pEd6XcI/TLRCA0KjkA46RDIpxUaRsBYEOqITwXRW2c0bMFyKcCRXrH4f7h4q9oOlg==
@@ -486,6 +486,11 @@
     "@prisma/engines-version" "5.7.1-1.0ca5ccbcfa6bdc81c003cf549abe4269f59c41e5"
     "@prisma/fetch-engine" "5.7.1"
     "@prisma/get-platform" "5.7.1"
+
+"@prisma/extension-accelerate@^0.6.2":
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/@prisma/extension-accelerate/-/extension-accelerate-0.6.2.tgz#31e0fabb0b0dc318dca9b4087e89bf07219a4866"
+  integrity sha512-KIBVPeWt8qaSg7wQ+TXmCVeUDoW75whtXcdS9dbHxRoO2OWFH5I9+qbkHBhx5Wj/h1wQpS8usuxGnsZqiBjUpQ==
 
 "@prisma/fetch-engine@5.7.1":
   version "5.7.1"
